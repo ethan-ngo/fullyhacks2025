@@ -1,46 +1,88 @@
 'use client';
+
 import { useState, useEffect } from "react";
-import { Card, CardContent} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/ui/bottom-nav";
 
 export default function Email() {
-  const cards = [
-    { id: 1, subject: "Amazon", label: "Order Confirmation", summary: "SwipeMail helps you organize emails!" },
-    { id: 2, subject: "Walmart", label: "Marketing", summary: "Swipe through your inbox effortlessly." },
-    { id: 3, subject: "Target", label: "Important", summary: "Keep your inbox clean and stress-free." },
-  ];
+  const [visibleCards, setVisibleCards] = useState<
+    { id: number; subject: string; label: string; summary: string }[]
+  >([]);
+  const [swipeDirection, setSwipeDirection] = useState("");
 
-  const [visibleCards, setVisibleCards] = useState(cards);
-  const [swipeDirection, setSwipeDirection] = useState(""); // Tracks swipe direction
+  // 📨 Fetch emails on load
+  /*useEffect(() => {
+    const fetchEmails = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/protected", {
+          method: "GET",
+          credentials: "include", // Important for Clerk JWT cookie
+        });
+        const data = await res.json();
 
-  const handleSwipe = (direction: "left" | "right") => {
-    setSwipeDirection(direction); // Set the swipe direction
-    setTimeout(() => {
-      // Remove the top card after the animation
-      setVisibleCards((prevCards) => prevCards.slice(1));
-      setSwipeDirection(""); // Reset swipe direction
-    }, 500); // Match the duration of the CSS transition
-  };
-
-  // Add keyboard event listener
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") {
-        handleSwipe("left"); // Swipe left on left arrow key
-      } else if (event.key === "ArrowRight") {
-        handleSwipe("right"); // Swipe right on right arrow key
+        if (res.ok && data.emails) {
+          const parsedCards = data.emails.map((subject: string, i: number) => ({
+            id: i + 1,
+            subject,
+            label: "Inbox",
+            summary: "SwipeMail retrieved this email subject for you.",
+          }));
+          setVisibleCards(parsedCards);
+        } else {
+          console.error("Error fetching emails:", data.error);
+        }
+      } catch (err) {
+        console.error("Request failed:", err);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    fetchEmails();
+  }, []);*/
+useEffect(() => {
+  const fetchEmails = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/protected", {
+        method: "GET",
+        credentials: "include",
+      });
 
-    // Cleanup event listener on component unmount
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+      const contentType = res.headers.get("content-type");
+
+      if (res.ok && contentType?.includes("application/json")) {
+        const data = await res.json();
+
+        if (data.emails) {
+          const parsedCards = data.emails.map((subject: string, i: number) => ({
+            id: i + 1,
+            subject,
+            label: "Inbox",
+            summary: "SwipeMail retrieved this email subject for you.",
+          }));
+          setVisibleCards(parsedCards);
+        } else {
+          console.error("❌ Backend JSON had no emails:", data);
+        }
+      } else {
+        const text = await res.text(); // safely read text once
+        console.error("❌ Backend returned HTML or non-JSON:", text);
+      }
+    } catch (err) {
+      console.error("❌ Request failed:", err);
+    }
+  };
+
+  fetchEmails();
+}, []);
+
+const handleSwipe = (direction: "left" | "right") => {
+  setSwipeDirection(direction);
+  setTimeout(() => {
+    setVisibleCards((prevCards) => prevCards.slice(1));
+    setSwipeDirection("");
+  }, 500);
+};
 
   return (
     <div className="relative flex items-center justify-center h-screen bg-gray-100">
@@ -55,9 +97,10 @@ export default function Email() {
               : ""
           }`}
           style={{
-            transform: index !== 0 ? `translateY(${index * 10}px)` : undefined,
-            zIndex: cards.length - index,
-          }}
+  transform: index !== 0 ? `translateY(${index * 10}px)` : undefined,
+  zIndex: visibleCards.length - index,
+}}
+
         >
           <Card className="w-full h-full">
             <CardContent className="flex flex-col items-center justify-center h-full">
