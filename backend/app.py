@@ -74,7 +74,7 @@ import requests
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=["https://localhost:3000"], supports_credentials=True)
+CORS(app, origins=["https://localhost:3000/api"], supports_credentials=True)
 clerk = Clerk(bearer_auth=os.getenv("CLERK_SECRET_KEY"))
 
 def flask_request_to_httpx():
@@ -90,7 +90,7 @@ def protected():
         auth_result = clerk.authenticate_request(
             flask_request_to_httpx(),
             AuthenticateRequestOptions(
-                authorized_parties=["http://localhost:3000"]
+                authorized_parties=["http://localhost:3001"]
             )
         )
 
@@ -98,17 +98,18 @@ def protected():
             return jsonify({"error": "Not signed in"}), 401
 
         res = clerk.users.get_o_auth_access_token(
-            user_id=auth_result.user_id,
+            user_id=auth_result.payload["sub"],
             provider="oauth_google"
         )
 
-        access_token = res.access_token
+        access_token = res[0].token
         headers = {"Authorization": f"Bearer {access_token}"}
         gmail_response = requests.get(
             "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=3",
             headers=headers
         )
 
+        print(gmail_response)
         gmail_response.raise_for_status()
         messages = gmail_response.json().get("messages", [])
 
