@@ -8,42 +8,21 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { SignOutButton, UserButton} from "@clerk/clerk-react";
 import LoadingOverlay from "@/components/LoadingOverlay";
 export default function Email() {
-  const [visibleCards, setVisibleCards] = useState([{}]);
+  interface Card {
+    id: number | string; // Unique identifier for the card
+    subject: string; // Email subject
+    label: string; // Email label (e.g., "Inbox")
+    summary: string; // Email summary
+  }
+
+  type TopCard = Card; // TopCard has the same structure as Card
+
+  const [visibleCards, setVisibleCards] = useState<Card[]>([]); // Array of cards
   const [swipeDirection, setSwipeDirection] = useState("");
   const [loading, setLoading] = useState(true)
-
-  const test = [
-    {
-      id: 1,
-      subject: "Welcome to SwipeMail!",
-      label: "Inbox",
-      summary: "This is your first email. Swipe to explore more!"
-    },
-    {
-      id: 2,
-      subject: "Your Weekly Newsletter",
-      label: "Promotions",
-      summary: "Check out the latest updates and offers in this week's newsletter."
-    },
-    {
-      id: 3,
-      subject: "Meeting Reminder",
-      label: "Work",
-      summary: "Don't forget about the meeting scheduled for tomorrow at 10 AM."
-    },
-    {
-      id: 4,
-      subject: "Your Order Has Shipped",
-      label: "Updates",
-      summary: "Your recent order has been shipped and is on its way!"
-    },
-    {
-      id: 5,
-      subject: "Happy Birthday!",
-      label: "Personal",
-      summary: "Wishing you a fantastic birthday filled with joy and surprises!"
-    }
-  ];
+  const [todo, setTodo] = useState({})
+  const [archived, setArchived] = useState({})
+  const [fetched, setFetched] = useState(false); // Track if emails have been fetched
 
 const getEmail = async () => {
   try {
@@ -73,18 +52,46 @@ useEffect(()=>{
   getEmail();
 }, [])
 
+useEffect(() => {
+  localStorage.setItem("archived", JSON.stringify(archived));
+}, [archived]); // Runs whenever `archived` changes
+
+useEffect(() => {
+  localStorage.setItem("todo", JSON.stringify(todo));
+}, [todo]);
+
 const handleSwipe = (direction: "left" | "right") => {
   setSwipeDirection(direction);
   setTimeout(() => {
-    setVisibleCards((prevCards) => prevCards.slice(1));
-    setSwipeDirection("");
+    setVisibleCards((prevCards) => {
+      const topCard = prevCards[0]; // Get the top card
+      console.log("Top Card:", topCard); // Log the top card for debugging
+
+      if (direction === "left") {
+        // Store the top card in archived
+        setArchived((prevArchived) => ({
+          ...prevArchived,
+          [topCard.id]: topCard,
+        }));
+      } else if (direction === "right") {
+        // Store the top card in todo
+        setTodo((prevTodo) => ({
+          ...prevTodo,
+          [topCard.id]: topCard,
+        }));
+      }
+
+      return prevCards.slice(1); // Remove the top card from visibleCards
+    });
+
+    setSwipeDirection(""); // Reset swipe direction after animation
   }, 500);
 };
 
   return (
     <div>
       <UserButton/>
-      {loading && visibleCards? <LoadingOverlay/> :
+      {loading ? <LoadingOverlay/> :
       <div className="relative flex justify-center h-screen bg-gray-100">
       {visibleCards.map((card, index) => (
         <div
