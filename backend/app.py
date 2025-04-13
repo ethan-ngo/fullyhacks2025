@@ -41,7 +41,7 @@ def protected():
             "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=3",
             headers=headers
         )
-
+        print(access_token)
         gmail_response.raise_for_status()
         messages = gmail_response.json().get("messages", [])
 

@@ -6,8 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { SignOutButton, UserButton} from "@clerk/clerk-react";
+import LoadingOverlay from "@/components/LoadingOverlay";
 export default function Email() {
-  const [visibleCards, setVisibleCards] = useState([
+  const [visibleCards, setVisibleCards] = useState([{}]);
+  const [swipeDirection, setSwipeDirection] = useState("");
+  const [loading, setLoading] = useState(true)
+
+  const test = [
     {
       id: 1,
       subject: "Welcome to SwipeMail!",
@@ -38,9 +43,35 @@ export default function Email() {
       label: "Personal",
       summary: "Wishing you a fantastic birthday filled with joy and surprises!"
     }
-  ]);
-  const [swipeDirection, setSwipeDirection] = useState("");
+  ];
 
+const getEmail = async () => {
+  try {
+    const response = await fetch("http://localhost:3001/api")
+    console.log("test")
+    if(response.ok){
+      const data = await response.json()
+      if (data.emails) {
+        const newCards = data.emails.map((email: string, index: number) => ({
+          id: visibleCards.length + index + 1,
+          subject: "Amazon",
+          label: "Inbox", // Default label for fetched emails
+          summary: email, // Default summary
+        }));
+
+        setVisibleCards((prevCards) => [...prevCards, ...newCards]);
+      }
+      setVisibleCards((prevCards) => prevCards.slice(1)); // Remove the top empty card
+      setLoading(false)
+    }
+  } catch(error) {
+    console.error(error)
+  }
+}
+
+useEffect(()=>{
+  getEmail();
+}, [])
 
 const handleSwipe = (direction: "left" | "right") => {
   setSwipeDirection(direction);
@@ -53,7 +84,8 @@ const handleSwipe = (direction: "left" | "right") => {
   return (
     <div>
       <UserButton/>
-      <div className="relative flex items-center justify-center h-screen bg-gray-100">
+      {loading && visibleCards? <LoadingOverlay/> :
+      <div className="relative flex justify-center h-screen bg-gray-100">
       {visibleCards.map((card, index) => (
         <div
           key={card.id}
@@ -117,8 +149,8 @@ const handleSwipe = (direction: "left" | "right") => {
       {visibleCards.length === 0 && (
         <p className="text-gray-600 text-lg">No more cards to swipe!</p>
       )}
-      <BottomNav />
     </div>
+    }
     <BottomNav />
     </div>
     
