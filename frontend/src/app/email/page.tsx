@@ -31,14 +31,14 @@ const getEmail = async () => {
     console.log("test")
     if(response.ok){
       const data = await response.json()
-      if (data.emails) {
-        const newCards = data.emails.map((email: string, index: number) => ({
+      console.log(data)
+      if (data) {
+        const newCards = data.map((email: any, index: number) => ({
           id: visibleCards.length + index + 1,
-          subject: "Amazon",
-          label: "Inbox", // Default label for fetched emails
-          summary: email, // Default summary
+          subject: email.sender_identity,
+          label: email.subject_summary, // Default label for fetched emails
+          summary: email.body_summary, // Default summary
         }));
-
         setVisibleCards((prevCards) => [...prevCards, ...newCards]);
       }
       setVisibleCards((prevCards) => prevCards.slice(1)); // Remove the top empty card

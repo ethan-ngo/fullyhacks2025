@@ -9,9 +9,9 @@ export function BottomNav() {
   const router = useRouter();
 
   const navItems = [
-    { label: "Archived", href: "/archived" },
-    { label: "Unread", href: "/email" },
-    { label: "To-Do", href: "/todo" },
+    { label: "🛰 Docked", href: "/archived" },
+    { label: "📡 Signal Feed", href: "/email" },
+    { label: "🚀 Launch Pad", href: "/todo" },
   ];
 
     return (
