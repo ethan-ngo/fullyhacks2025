@@ -5,7 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/ui/bottom-nav";
-import { SignOutButton, UserButton} from "@clerk/clerk-react";
+import { SignOutButton, UserButton } from "@clerk/clerk-react";
+import { Separator } from "@/components/ui/separator";
+
 import LoadingOverlay from "@/components/LoadingOverlay";
 export default function Email() {
   interface Card {
@@ -87,75 +89,81 @@ const handleSwipe = (direction: "left" | "right") => {
 };
 
   return (
-    <div>
-      <UserButton/>
-      <div className="relative flex justify-center h-screen bg-gray-100">
-      {visibleCards.map((card, index) => (
-        <div
-          key={card.id}
-          className={`absolute w-100 h-116 bg-white shadow-lg rounded-lg flex items-center justify-center transition-transform duration-500 ${
-            index === 0 && swipeDirection === "left"
-              ? "translate-x-[-200%] rotate-[-10deg]"
-              : index === 0 && swipeDirection === "right"
-              ? "translate-x-[200%] rotate-[10deg]"
-              : ""
-          }`}
-          style={{
-  transform: index !== 0 ? `translateY(${index * 10}px)` : undefined,
-  zIndex: visibleCards.length - index,
-}}
-
-        >
-          <Card className="w-full h-full">
-            <CardContent className="flex flex-col items-center justify-center h-full">
-              <p className="text-lg font-bold text-gray-800 p-4">{card.subject}</p>
-              <p className="text-sm font-medium text-gray-700 bg-gray-200 px-3 py-1 rounded-full p-4">{card.label}</p>
-              <p className="text-lg text-gray-800 p-4">{card.summary}</p>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => handleSwipe("left")}
-                  className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+    <div className="relative min-h-screen bg-transparent z-10">
+      {/* Top section */}
+      <div className="bg-gray-100 bg-opacity-90 backdrop-blur-sm px-4 pt-1 pb-1 shadow-md">
+        <UserButton />
+      
+        <h1 className="text-2xl font-bold text-center pt-2">Unread Emails</h1>
+        <Separator className="mt-4" />
+      </div>
+      
+      <div className="relative flex justify-center h-[70vh] mt-8">
+        {visibleCards.map((card, index) => (
+          <div
+            key={card.id}
+            className={`absolute w-100 h-116 bg-white shadow-lg rounded-lg flex items-center justify-center transition-transform duration-500 ${index === 0 && swipeDirection === "left"
+                ? "translate-x-[-200%] rotate-[-10deg]"
+                : index === 0 && swipeDirection === "right"
+                  ? "translate-x-[200%] rotate-[10deg]"
+                  : ""
+              }`}
+            style={{
+              transform: index !== 0 ? `translateY(${index * 10}px)` : undefined,
+              zIndex: visibleCards.length - index,
+            }}
+          >
+            <Card className="w-full h-full">
+              <CardContent className="flex flex-col items-center justify-center h-full">
+                <p className="text-lg font-bold text-gray-800 p-4">{card.subject}</p>
+                <p className="text-sm font-medium text-gray-700 bg-gray-200 px-3 py-1 rounded-full p-4">{card.label}</p>
+                <p className="text-lg text-gray-800 p-4">{card.summary}</p>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => handleSwipe("left")}
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                  >
+                    Swipe Left
+                  </button>
+                  <button
+                    onClick={() => handleSwipe("right")}
+                    className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                  >
+                    Swipe Right
+                  </button>
+                </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault(); // Prevent default form submission behavior
+                    const formData = new FormData(e.target as HTMLFormElement);
+                    const inputValue = formData.get("userInput");
+                    console.log("Form submitted with input:", inputValue);
+                  }}
+                  className="mt-4 w-full"
                 >
-                  Swipe Left
-                </button>
-                <button
-                  onClick={() => handleSwipe("right")}
-                  className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-                >
-                  Swipe Right
-                </button>
-              </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault(); // Prevent default form submission behavior
-                  const formData = new FormData(e.target as HTMLFormElement);
-                  const inputValue = formData.get("userInput");
-                  console.log("Form submitted with input:", inputValue);
-                }}
-                className="mt-4 w-full"
-              >
-                <Input
-                  name="userInput"
-                  placeholder="Type something..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-                <button
-                  type="submit"
-                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                >
-                  Submit
-                </button>
-              </form>
-            </CardContent>
-          </Card>
+                  <Input
+                    name="userInput"
+                    placeholder="Type something..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                  <button
+                    type="submit"
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                  >
+                    Submit
+                  </button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+        {visibleCards.length === 0 && (
+          <p className="text-gray-600 text-lg">No more cards to swipe!</p>
+        )}
         </div>
-      ))}
-      {visibleCards.length === 0 && (
-        <p className="text-gray-600 text-lg">No more cards to swipe!</p>
-      )}
-    </div>
+      
     <BottomNav />
     </div>
-    
+
   );
 }
