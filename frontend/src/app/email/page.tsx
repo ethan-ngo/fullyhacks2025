@@ -5,76 +5,42 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/ui/bottom-nav";
-
+import { SignOutButton, UserButton} from "@clerk/clerk-react";
 export default function Email() {
-  const [visibleCards, setVisibleCards] = useState<
-    { id: number; subject: string; label: string; summary: string }[]
-  >([]);
+  const [visibleCards, setVisibleCards] = useState([
+    {
+      id: 1,
+      subject: "Welcome to SwipeMail!",
+      label: "Inbox",
+      summary: "This is your first email. Swipe to explore more!"
+    },
+    {
+      id: 2,
+      subject: "Your Weekly Newsletter",
+      label: "Promotions",
+      summary: "Check out the latest updates and offers in this week's newsletter."
+    },
+    {
+      id: 3,
+      subject: "Meeting Reminder",
+      label: "Work",
+      summary: "Don't forget about the meeting scheduled for tomorrow at 10 AM."
+    },
+    {
+      id: 4,
+      subject: "Your Order Has Shipped",
+      label: "Updates",
+      summary: "Your recent order has been shipped and is on its way!"
+    },
+    {
+      id: 5,
+      subject: "Happy Birthday!",
+      label: "Personal",
+      summary: "Wishing you a fantastic birthday filled with joy and surprises!"
+    }
+  ]);
   const [swipeDirection, setSwipeDirection] = useState("");
 
-  // 📨 Fetch emails on load
-  /*useEffect(() => {
-    const fetchEmails = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/protected", {
-          method: "GET",
-          credentials: "include", // Important for Clerk JWT cookie
-        });
-        const data = await res.json();
-
-        if (res.ok && data.emails) {
-          const parsedCards = data.emails.map((subject: string, i: number) => ({
-            id: i + 1,
-            subject,
-            label: "Inbox",
-            summary: "SwipeMail retrieved this email subject for you.",
-          }));
-          setVisibleCards(parsedCards);
-        } else {
-          console.error("Error fetching emails:", data.error);
-        }
-      } catch (err) {
-        console.error("Request failed:", err);
-      }
-    };
-
-    fetchEmails();
-  }, []);*/
-useEffect(() => {
-  const fetchEmails = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/protected", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const contentType = res.headers.get("content-type");
-
-      if (res.ok && contentType?.includes("application/json")) {
-        const data = await res.json();
-
-        if (data.emails) {
-          const parsedCards = data.emails.map((subject: string, i: number) => ({
-            id: i + 1,
-            subject,
-            label: "Inbox",
-            summary: "SwipeMail retrieved this email subject for you.",
-          }));
-          setVisibleCards(parsedCards);
-        } else {
-          console.error("❌ Backend JSON had no emails:", data);
-        }
-      } else {
-        const text = await res.text(); // safely read text once
-        console.error("❌ Backend returned HTML or non-JSON:", text);
-      }
-    } catch (err) {
-      console.error("❌ Request failed:", err);
-    }
-  };
-
-  fetchEmails();
-}, []);
 
 const handleSwipe = (direction: "left" | "right") => {
   setSwipeDirection(direction);
@@ -85,7 +51,9 @@ const handleSwipe = (direction: "left" | "right") => {
 };
 
   return (
-    <div className="relative flex items-center justify-center h-screen bg-gray-100">
+    <div>
+      <UserButton/>
+      <div className="relative flex items-center justify-center h-screen bg-gray-100">
       {visibleCards.map((card, index) => (
         <div
           key={card.id}
@@ -151,5 +119,8 @@ const handleSwipe = (direction: "left" | "right") => {
       )}
       <BottomNav />
     </div>
+    <BottomNav />
+    </div>
+    
   );
 }
