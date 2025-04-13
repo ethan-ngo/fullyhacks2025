@@ -43,27 +43,80 @@ curr_email = ""
 app = Flask(__name__)
 
 
+def get_email_data(access_token):
+    # Fetch and parse email using Gmail API
+    try:
+        # Create credentials from the access token
+        creds = Credentials(access_token)
+
+        # Build Gmail service
+        service = build('gmail', 'v1', credentials=creds)
+
+        # Fetch latest email
+        messages = service.users().messages().list(
+            userId='me',
+            maxResults=1
+        ).execute().get('messages', [])
+
+        if not messages:
+            return None
+
+        msg = service.users().messages().get(
+            userId='me',
+            id=messages[0]['id'],
+            format='full'
+        ).execute()
+
+        # Parse headers
+        headers = msg['payload']['headers']
+        sender = next(h['value'] for h in headers if h['name'] == 'From')
+        subject = next(h['value'] for h in headers if h['name'] == 'Subject')
+
+        # Parse body
+        parts = msg['payload'].get('parts', [])
+        body = ""
+        for part in parts:
+            if part['mimeType'] == 'text/plain':
+                data = part['body']['data']
+                body = base64.urlsafe_b64decode(data).decode('utf-8')
+                break
+
+        return {
+            "sender address": sender,
+            "subject": subject,
+            "email body": body
+        }
+
+    except Exception as e:
+        raise Exception(f"Gmail API error: {str(e)}")
+
+
 @app.route('/')
 def home():
     return render_template('test.html')
 
 
-@app.route('/ask', methods=['post'])
+@app.route('/ask', methods=['POST'])
 def ask_ai():
-    global curr_email # allows for variable to be modified with the current email obtained~
-
-    # TODO: update user email with obtained email:
-    # new_email =
+    # Get Google access token from request (sent from frontend)
+    data = request.get_json()
+    if not data or 'access_token' not in data:
+        return jsonify({'error': 'Missing access token'}), 400
 
     try:
-        # combine system "hard-coded" instructions and user email and send to ai api call:
-        combined_prompt = f"{system_instructions} \n\n User's Email in JSON: {curr_email}"
+        # Fetch and parse email
+        email_data = get_email_data(data['access_token'])
+        if not email_data:
+            return jsonify({'error': 'No emails found'}), 404
+
+        # Generate response with Gemini
+        combined_prompt = f"{system_instructions}\n\nUser's Email in JSON: {json.dumps(email_data)}"
         response = model.generate_content(combined_prompt)
 
         return jsonify({'response': response.text})
 
     except Exception as e:
-        return jsonify({'error':str(e)}), 500
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
