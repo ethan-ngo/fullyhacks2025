@@ -19,7 +19,6 @@ export default function Email() {
 
   const [visibleCards, setVisibleCards] = useState<Card[]>([]); // Array of cards
   const [swipeDirection, setSwipeDirection] = useState("");
-  const [loading, setLoading] = useState(true)
   const [todo, setTodo] = useState({})
   const [archived, setArchived] = useState({})
   const [fetched, setFetched] = useState(false); // Track if emails have been fetched
@@ -41,7 +40,6 @@ const getEmail = async () => {
         setVisibleCards((prevCards) => [...prevCards, ...newCards]);
       }
       setVisibleCards((prevCards) => prevCards.slice(1)); // Remove the top empty card
-      setLoading(false)
     }
   } catch(error) {
     console.error(error)
@@ -91,7 +89,6 @@ const handleSwipe = (direction: "left" | "right") => {
   return (
     <div>
       <UserButton/>
-      {loading ? <LoadingOverlay/> :
       <div className="relative flex justify-center h-screen bg-gray-100">
       {visibleCards.map((card, index) => (
         <div
@@ -157,7 +154,6 @@ const handleSwipe = (direction: "left" | "right") => {
         <p className="text-gray-600 text-lg">No more cards to swipe!</p>
       )}
     </div>
-    }
     <BottomNav />
     </div>
     
