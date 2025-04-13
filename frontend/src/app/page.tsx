@@ -1,8 +1,23 @@
+'use client';
+
+import { useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { SignInButton } from "@clerk/nextjs";
+
 
 export default function Home() {
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.push("/email");
+    }
+  }, [isSignedIn, router]);
   return (
     <div
       className="relative min-h-screen flex flex-col items-center justify-center text-center bg-cover bg-center px-4"
@@ -23,9 +38,9 @@ export default function Home() {
         </p>
 
         {/* Call to Action */}
-        <Link href="/card">
+        <SignInButton mode="modal">
           <Button className="w-full text-lg">Sign In</Button>
-        </Link>
+        </SignInButton>
       </div>
     </div>
   );
