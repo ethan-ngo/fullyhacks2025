@@ -117,6 +117,7 @@ const handleSwipe = (direction: "left" | "right") => {
       {visibleCards.length === 0 && (
         <p className="text-gray-600 text-lg">No more cards to swipe!</p>
       )}
+      <BottomNav />
     </div>
     <BottomNav />
     </div>
