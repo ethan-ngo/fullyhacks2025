@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 from dotenv import  load_dotenv
 import os
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+import json
+import base64 # ?
+
 
 #load environment variables
 load_dotenv()
