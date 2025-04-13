@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Woohoo!!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #chat-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        #user-input {
+            width: 70%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .ai-response {
+            background-color: #f1f1f1;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Meowmeowmeowmeowmemow</h1>
+    <div id="chat-container"></div>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Ask me anything..." required>
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatContainer = document.getElementById('chat-container');
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const question = userInput.value;
+            if (!question) return;
+
+            // Add user message to chat
+            chatContainer.innerHTML += `<div class="user-message">You: ${question}</div>`;
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `user_input=${encodeURIComponent(question)}`
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    chatContainer.innerHTML += `<div class="ai-response" style="color:red">Error: ${data.error}</div>`;
+                } else {
+                    chatContainer.innerHTML += `<div class="ai-response">Gemini: ${data.response}</div>`;
+                }
+            } catch (error) {
+                chatContainer.innerHTML += `<div class="ai-response" style="color:red">Error: ${error.message}</div>`;
+            }
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+    </script>
+</body>
+</html>
