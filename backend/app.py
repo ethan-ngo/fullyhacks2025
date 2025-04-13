@@ -109,7 +109,6 @@ def protected():
             headers=headers
         )
 
-        print(gmail_response)
         gmail_response.raise_for_status()
         messages = gmail_response.json().get("messages", [])
 

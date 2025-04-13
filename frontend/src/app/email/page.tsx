@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/ui/bottom-nav";
-import { SignOutButton} from "@clerk/clerk-react";
+import { SignOutButton, UserButton} from "@clerk/clerk-react";
 export default function Email() {
   const [visibleCards, setVisibleCards] = useState([
     {
@@ -52,7 +52,7 @@ const handleSwipe = (direction: "left" | "right") => {
 
   return (
     <div>
-      <SignOutButton/>
+      <UserButton/>
       <div className="relative flex items-center justify-center h-screen bg-gray-100">
       {visibleCards.map((card, index) => (
         <div
