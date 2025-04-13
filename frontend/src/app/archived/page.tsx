@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { BottomNav } from "@/components/ui/bottom-nav";
+import { SignOutButton, UserButton } from "@clerk/clerk-react";
 
 const archivedEmails = [
   {
@@ -24,11 +25,15 @@ const archivedEmails = [
 
 export default function ArchivedPage() {
   return (
-    <div className="relative min-h-screen bg-gray-100 pb-24 px-4 pt-6">
-      <h1 className="text-2xl font-bold text-center pb-4">Archived</h1>
-      <Separator className="mb-6" />
+    <div className="relative min-h-screen bg-transparent z-10">
+      {/* Top section */}
+      <div className="bg-gray-100 bg-opacity-90 backdrop-blur-sm px-4 pt-1 pb-1 shadow-md">
+        <UserButton />
+        <h1 className="text-2xl font-bold text-center pt-2">Archived</h1>
+        <Separator className="mt-4" />
+      </div>
 
-      <div className="space-y-4 max-w-2xl mx-auto">
+      <div className="mt-8 max-w-xl mx-auto space-y-6">
         {archivedEmails.map((email) => (
           <Card key={email.id}>
             <CardContent className="p-6 space-y-2">

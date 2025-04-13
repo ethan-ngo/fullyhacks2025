@@ -1,0 +1,87 @@
+html {
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    overflow-x: hidden;
+  }
+  
+  #stars,
+  #stars2,
+  #stars3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: transparent;
+  }
+  
+  #stars {
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    box-shadow:
+      1772px 1833px #fff, 1853px 1349px #fff, 610px 591px #fff, 1980px 866px #fff,
+      992px 1843px #fff, 1762px 738px #fff, 512px 1536px #fff, 1580px 1994px #fff,
+      1234px 1733px #fff, 157px 1239px #fff, 321px 188px #fff, 1702px 946px #fff,
+      73px 97px #fff, 1444px 149px #fff, 1188px 1965px #fff, 184px 1324px #fff,
+      84px 299px #fff, 1104px 163px #fff, 1247px 642px #fff, 493px 1170px #fff;
+    animation: animStar 50s linear infinite;
+  }
+  
+  #stars:after {
+    content: " ";
+    position: absolute;
+    top: 2000px;
+    width: 1px;
+    height: 1px;
+    box-shadow: inherit;
+  }
+  
+  #stars2 {
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    box-shadow:
+      1294px 730px #fff, 448px 1900px #fff, 1698px 1596px #fff, 1442px 385px #fff,
+      1096px 1501px #fff, 170px 1053px #fff, 788px 379px #fff, 1752px 1960px #fff,
+      1420px 345px #fff, 636px 1680px #fff;
+    animation: animStar 100s linear infinite;
+  }
+  
+  #stars2:after {
+    content: " ";
+    position: absolute;
+    top: 2000px;
+    width: 2px;
+    height: 2px;
+    box-shadow: inherit;
+  }
+  
+  #stars3 {
+    width: 3px;
+    height: 3px;
+    background: transparent;
+    box-shadow:
+      1287px 1206px #fff, 1988px 1522px #fff, 1087px 532px #fff, 1900px 956px #fff,
+      684px 328px #fff;
+    animation: animStar 150s linear infinite;
+  }
+  
+  #stars3:after {
+    content: " ";
+    position: absolute;
+    top: 2000px;
+    width: 3px;
+    height: 3px;
+    box-shadow: inherit;
+  }
+  
+  @keyframes animStar {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(-2000px);
+    }
+  }
+  
