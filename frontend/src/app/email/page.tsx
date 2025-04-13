@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "@/components/ui/bottom-nav";
 
 export default function Email() {
   const cards = [
@@ -100,6 +101,7 @@ export default function Email() {
               </form>
             </CardContent>
           </Card>
+          <BottomNav />
         </div>
       ))}
       {visibleCards.length === 0 && (
